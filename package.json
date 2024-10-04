@@ -1,0 +1,59 @@
+{
+  "name": "@cristiand391/oclif-carapace-spec-plugin",
+  "description": "oclif plugin to generate a carapace spec",
+  "version": "0.0.0",
+  "author": {
+    "name": "Cristian Dominguez",
+    "url": "https://github.com/cristiand391"
+  },
+  "homepage": "https://github.com/cristiand391/oclif-carapace-spec-plugin",
+  "bugs": "https://github.com/cristiand391/oclif-carapace-spec-plugin/issues",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@oclif/core": "^4",
+    "ansis": "^3.3.2",
+    "ejs": "^3.1.10",
+    "yaml": "^2.5.1"
+  },
+  "devDependencies": {
+    "@types/ejs": "^3.1.5",
+    "@types/node": "^18",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint": "^8",
+    "oclif": "^4",
+    "ts-node": "^10",
+    "typescript": "^5"
+  },
+  "files": [
+    "/bin",
+    "/dist",
+    "/oclif.manifest.json"
+  ],
+  "keywords": [
+    "oclif",
+    "carapace"
+  ],
+  "license": "MIT",
+  "main": "dist/index.js",
+  "type": "module",
+  "oclif": {
+    "bin": "carapace-spec",
+    "commands": "./dist/commands",
+    "topicSeparator": " ",
+    "hooks": {
+      "plugins:postinstall": "./dist/hooks/refresh-cache.js",
+      "plugins:postuninstall": "./dist/hooks/refresh-cache.js"
+    }
+  },
+  "repository": "cristiand391/oclif-carapace-spec-plugin",
+  "scripts": {
+    "build": "rm -rf dist && tsc -b",
+    "lint": "eslint . --ext .ts",
+    "postpack": "rm -f oclif.manifest.json",
+    "prepack": "oclif manifest"
+  },
+  "types": "dist/index.d.ts"
+}
