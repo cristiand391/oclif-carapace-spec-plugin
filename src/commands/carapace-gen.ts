@@ -83,16 +83,6 @@ https://github.com/carapace-sh/carapace-spec`
 
         const isCommand = "flags" in node
 
-//         if (node.id.startsWith('data:query')) {
-//           console.log(`node: data:query
-// summary: ${node.summary}
-// part: ${part}
-// existingCommand: ${JSON.stringify(existingCommand)}
-// isCommand: ${isCommand}
-// currentLevel: ${JSON.stringify(currentLevel)}
-// `)
-//         }
-
         let flags: YAMLMap | undefined
         
         if (isCommand) {
@@ -115,6 +105,13 @@ https://github.com/carapace-sh/carapace-spec`
           }
         }
 
+        // if on last part of the node and the existing node is a topic,
+        // then the current node is a cotopic (topic that's also a command).
+        //
+        // In these cases we want to modify the cotopic node to:
+        // 1. prefer the command's summary over the topic one
+        // 2. add the command's flags
+        // 3. add the topic's command
         if (part === parts[parts.length - 1] && existingCommand && !('flags' in existingCommand)) {
           const existingCommandIdx = currentLevel.findIndex(cmd => cmd.name === part);
 
@@ -163,9 +160,7 @@ https://github.com/carapace-sh/carapace-spec`
     }
 
     for (const plugin of this.config.getPluginsList()) {
-      // if (plugin.name !== '@salesforce/plugin-data') continue
       for (const cmd of plugin.commands) {
-        // if (!cmd.id.startsWith('data:query')) continue
         if (cmd.state === 'deprecated' ||  cmd.hidden) continue
 
         const summary = this.sanitizeSummary(cmd.summary ?? cmd.description)
