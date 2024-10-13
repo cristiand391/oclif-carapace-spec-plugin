@@ -105,7 +105,25 @@ https://github.com/carapace-sh/carapace-spec`
           }
         }
 
-        if (!existingCommand) {
+        // if on last part of the node and the existing node is a topic,
+        // then the current node is a cotopic (topic that's also a command).
+        //
+        // In these cases we want to modify the cotopic node to:
+        // 1. prefer the command's summary over the topic one
+        // 2. add the command's flags
+        // 3. add the topic's command
+        if (part === parts[parts.length - 1] && existingCommand && !('flags' in existingCommand)) {
+          const existingCommandIdx = currentLevel.findIndex(cmd => cmd.name === part);
+
+          existingCommand = {
+            description: node.summary,
+            name: part,
+            ...(isCommand ? {flags}: {}),
+            commands: existingCommand.commands
+          }
+
+          currentLevel[existingCommandIdx] = existingCommand
+        } else if (!existingCommand) {
           // Create a new command entry
           existingCommand = {
             description: node.summary,
@@ -134,6 +152,7 @@ https://github.com/carapace-sh/carapace-spec`
     // having the topic nodes first ensures their help text matches what's defined
     // in the plugin's pjson (descriptions in `oclif.topics`)
     for (const t of this.getTopics()) {
+      // if (!t.id.startsWith('data')) continue
       nodes.push({
         id: t.id,
         summary: t.summary
