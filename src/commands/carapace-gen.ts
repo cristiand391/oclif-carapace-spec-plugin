@@ -83,6 +83,16 @@ https://github.com/carapace-sh/carapace-spec`
 
         const isCommand = "flags" in node
 
+//         if (node.id.startsWith('data:query')) {
+//           console.log(`node: data:query
+// summary: ${node.summary}
+// part: ${part}
+// existingCommand: ${JSON.stringify(existingCommand)}
+// isCommand: ${isCommand}
+// currentLevel: ${JSON.stringify(currentLevel)}
+// `)
+//         }
+
         let flags: YAMLMap | undefined
         
         if (isCommand) {
@@ -105,7 +115,18 @@ https://github.com/carapace-sh/carapace-spec`
           }
         }
 
-        if (!existingCommand) {
+        if (part === parts[parts.length - 1] && existingCommand && !('flags' in existingCommand)) {
+          const existingCommandIdx = currentLevel.findIndex(cmd => cmd.name === part);
+
+          existingCommand = {
+            description: node.summary,
+            name: part,
+            ...(isCommand ? {flags}: {}),
+            commands: existingCommand.commands
+          }
+
+          currentLevel[existingCommandIdx] = existingCommand
+        } else if (!existingCommand) {
           // Create a new command entry
           existingCommand = {
             description: node.summary,
@@ -134,6 +155,7 @@ https://github.com/carapace-sh/carapace-spec`
     // having the topic nodes first ensures their help text matches what's defined
     // in the plugin's pjson (descriptions in `oclif.topics`)
     for (const t of this.getTopics()) {
+      // if (!t.id.startsWith('data')) continue
       nodes.push({
         id: t.id,
         summary: t.summary
@@ -141,7 +163,9 @@ https://github.com/carapace-sh/carapace-spec`
     }
 
     for (const plugin of this.config.getPluginsList()) {
+      // if (plugin.name !== '@salesforce/plugin-data') continue
       for (const cmd of plugin.commands) {
+        // if (!cmd.id.startsWith('data:query')) continue
         if (cmd.state === 'deprecated' ||  cmd.hidden) continue
 
         const summary = this.sanitizeSummary(cmd.summary ?? cmd.description)
