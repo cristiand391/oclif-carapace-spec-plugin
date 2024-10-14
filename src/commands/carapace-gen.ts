@@ -88,10 +88,17 @@ https://github.com/carapace-sh/carapace-spec`
         if (isCommand) {
           flags= new YAMLMap()
 
+          let hasHelpFlag = false;
+
           for (const flagName in node.flags) {
             const flag = node.flags[flagName]
 
             if (flag.deprecated || flag.hidden) continue
+
+            // check if `--help` is already taken by the command, carapace-spec panics on duplicated flags
+            if (!hasHelpFlag) {
+              hasHelpFlag = flagName === 'help'
+            }
 
             let flagDef = flag.char ? `-${flag.char}, --${flagName}` : `--${flagName}`
             if (flag.type === "option" && flag.multiple) {
@@ -101,6 +108,14 @@ https://github.com/carapace-sh/carapace-spec`
             flags.add({
               key: flagDef,
               value: node.flags[flagName].summary ?? node.flags[flagName].description ?? ''
+            })
+          }
+
+          // add oclif's global help flag
+          if (!hasHelpFlag) {
+            flags.add({
+              key: '--help',
+              value: 'Show help for command'
             })
           }
         }
