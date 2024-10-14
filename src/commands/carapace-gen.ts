@@ -84,6 +84,13 @@ https://github.com/carapace-sh/carapace-spec`
         const isCommand = "flags" in node
 
         let flags: YAMLMap | undefined
+
+        const completion: {
+          flag: { [key: string]: string[] }
+        } = {
+          flag: {}
+        }
+        let hasFlagValueCompletion = false
         
         if (isCommand) {
           flags= new YAMLMap()
@@ -101,8 +108,16 @@ https://github.com/carapace-sh/carapace-spec`
             }
 
             let flagDef = flag.char ? `-${flag.char}, --${flagName}` : `--${flagName}`
-            if (flag.type === "option" && flag.multiple) {
-              flagDef += "*"
+
+            // See flag modifiers:
+            // https://carapace-sh.github.io/carapace-spec/carapace-spec/command/flags.html
+            if (flag.type === "option") {
+              flagDef += flag.multiple ? '*=' : '='
+
+              if (flag.options) {
+                completion.flag[flagName] = [...flag.options] 
+                hasFlagValueCompletion = true
+              }
             }
 
             flags.add({
@@ -134,6 +149,7 @@ https://github.com/carapace-sh/carapace-spec`
             description: node.summary,
             name: part,
             ...(isCommand ? {flags}: {}),
+            ...((isCommand && hasFlagValueCompletion ) ? { completion } : {}),
             commands: existingCommand.commands
           }
 
@@ -144,6 +160,7 @@ https://github.com/carapace-sh/carapace-spec`
             description: node.summary,
             name: part,
             ...(isCommand ? {flags}: {}),
+            ...((isCommand && hasFlagValueCompletion )? { completion } : {}),
             commands: []
           };
           currentLevel.push(existingCommand);
