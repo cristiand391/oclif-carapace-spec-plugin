@@ -91,6 +91,8 @@ https://github.com/carapace-sh/carapace-spec`
           flag: {}
         }
         let hasFlagValueCompletion = false
+
+        const exclusiveflags: string[][] = []
         
         if (isCommand) {
           flags= new YAMLMap()
@@ -101,6 +103,25 @@ https://github.com/carapace-sh/carapace-spec`
             const flag = node.flags[flagName]
 
             if (flag.deprecated || flag.hidden) continue
+
+            if (node.flags[flagName].exclusive) {
+              const exclusives = node.flags[flagName].exclusive.filter(flag => {
+                // @ts-ignore
+                return node.flags[flag] && !node.flags[flag].hidden
+              })
+
+              if (exclusives.length === 0) continue
+
+              // avoid duplicate `exclusiveflags` arrays
+              // this can happen if 2 or more flags define the same exclusions.
+              const sortedFlagExclusives = [...exclusives, flagName].sort()
+              const alreadyExists = exclusiveflags.find(exclusive => exclusive.toString() === sortedFlagExclusives.toString())
+
+              if (!alreadyExists) {
+                exclusiveflags.push(sortedFlagExclusives)
+              }
+            }
+
 
             // check if `--help` is already taken by the command, carapace-spec panics on duplicated flags
             if (!hasHelpFlag) {
@@ -150,6 +171,7 @@ https://github.com/carapace-sh/carapace-spec`
             name: part,
             ...(isCommand ? {flags}: {}),
             ...((isCommand && hasFlagValueCompletion ) ? { completion } : {}),
+            ...((isCommand && exclusiveflags.length > 0 ) ? { exclusiveflags } : {}),
             commands: existingCommand.commands
           }
 
@@ -160,6 +182,7 @@ https://github.com/carapace-sh/carapace-spec`
             description: node.summary,
             name: part,
             ...(isCommand ? {flags}: {}),
+            ...((isCommand && exclusiveflags.length > 0 ) ? { exclusiveflags } : {}),
             ...((isCommand && hasFlagValueCompletion )? { completion } : {}),
             commands: []
           };
@@ -184,7 +207,6 @@ https://github.com/carapace-sh/carapace-spec`
     // having the topic nodes first ensures their help text matches what's defined
     // in the plugin's pjson (descriptions in `oclif.topics`)
     for (const t of this.getTopics()) {
-      // if (!t.id.startsWith('data')) continue
       nodes.push({
         id: t.id,
         summary: t.summary
