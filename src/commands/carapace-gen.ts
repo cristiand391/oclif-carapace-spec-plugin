@@ -84,23 +84,74 @@ https://github.com/carapace-sh/carapace-spec`
         const isCommand = "flags" in node
 
         let flags: YAMLMap | undefined
+
+        const completion: {
+          flag: { [key: string]: string[] }
+        } = {
+          flag: {}
+        }
+        let hasFlagValueCompletion = false
+
+        const exclusiveflags: string[][] = []
         
         if (isCommand) {
           flags= new YAMLMap()
+
+          let hasHelpFlag = false;
 
           for (const flagName in node.flags) {
             const flag = node.flags[flagName]
 
             if (flag.deprecated || flag.hidden) continue
 
+            if (node.flags[flagName].exclusive) {
+              const exclusives = node.flags[flagName].exclusive.filter(flag => {
+                // @ts-ignore
+                return node.flags[flag] && !node.flags[flag].hidden
+              })
+
+              if (exclusives.length === 0) continue
+
+              // avoid duplicate `exclusiveflags` arrays
+              // this can happen if 2 or more flags define the same exclusions.
+              const sortedFlagExclusives = [...exclusives, flagName].sort()
+              const alreadyExists = exclusiveflags.find(exclusive => exclusive.toString() === sortedFlagExclusives.toString())
+
+              if (!alreadyExists) {
+                exclusiveflags.push(sortedFlagExclusives)
+              }
+            }
+
+
+            // check if `--help` is already taken by the command, carapace-spec panics on duplicated flags
+            if (!hasHelpFlag) {
+              hasHelpFlag = flagName === 'help'
+            }
+
             let flagDef = flag.char ? `-${flag.char}, --${flagName}` : `--${flagName}`
-            if (flag.type === "option" && flag.multiple) {
-              flagDef += "*"
+
+            // See flag modifiers:
+            // https://carapace-sh.github.io/carapace-spec/carapace-spec/command/flags.html
+            if (flag.type === "option") {
+              flagDef += flag.multiple ? '*=' : '='
+
+              if (flag.options) {
+                completion.flag[flagName] = [...flag.options] 
+                hasFlagValueCompletion = true
+              }
             }
 
             flags.add({
               key: flagDef,
               value: node.flags[flagName].summary ?? node.flags[flagName].description ?? ''
+            })
+          }
+
+          // add oclif's global help flag
+          if (!hasHelpFlag) {
+            flags.add({
+              key: '--help',
+              value: 'Show help for command'
             })
           }
         }
@@ -119,6 +170,8 @@ https://github.com/carapace-sh/carapace-spec`
             description: node.summary,
             name: part,
             ...(isCommand ? {flags}: {}),
+            ...((isCommand && hasFlagValueCompletion ) ? { completion } : {}),
+            ...((isCommand && exclusiveflags.length > 0 ) ? { exclusiveflags } : {}),
             commands: existingCommand.commands
           }
 
@@ -129,6 +182,8 @@ https://github.com/carapace-sh/carapace-spec`
             description: node.summary,
             name: part,
             ...(isCommand ? {flags}: {}),
+            ...((isCommand && exclusiveflags.length > 0 ) ? { exclusiveflags } : {}),
+            ...((isCommand && hasFlagValueCompletion )? { completion } : {}),
             commands: []
           };
           currentLevel.push(existingCommand);
@@ -152,7 +207,6 @@ https://github.com/carapace-sh/carapace-spec`
     // having the topic nodes first ensures their help text matches what's defined
     // in the plugin's pjson (descriptions in `oclif.topics`)
     for (const t of this.getTopics()) {
-      // if (!t.id.startsWith('data')) continue
       nodes.push({
         id: t.id,
         summary: t.summary
