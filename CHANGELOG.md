@@ -1,3 +1,12 @@
+# [0.2.0](https://github.com/cristiand391/oclif-carapace-spec-plugin/compare/0.1.1...0.2.0) (2024-10-16)
+
+
+### Features
+
+* support help/option/exclusive flags ([#3](https://github.com/cristiand391/oclif-carapace-spec-plugin/issues/3)) ([a7398cb](https://github.com/cristiand391/oclif-carapace-spec-plugin/commit/a7398cb1a24bba0c7019b34ac9c4f8ca510a8d2b))
+
+
+
 ## [0.1.1](https://github.com/cristiand391/oclif-carapace-spec-plugin/compare/0.1.0...0.1.1) (2024-10-13)
 
 
