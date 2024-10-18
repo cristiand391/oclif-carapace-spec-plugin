@@ -23,4 +23,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create ${{ steps.changelog.outputs.tag }} --notes ${{ steps.changelog.outputs.clean_changelog }}
+          gh release create "${{ steps.changelog.outputs.tag }}" --notes "${{ steps.changelog.outputs.clean_changelog }}"
