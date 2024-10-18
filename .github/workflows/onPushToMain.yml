@@ -19,6 +19,7 @@ jobs:
         with:
           tag-prefix: ''
       - name: Create Github Release
+        if: ${{ steps.changelog.outputs.skipped == 'false' }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
