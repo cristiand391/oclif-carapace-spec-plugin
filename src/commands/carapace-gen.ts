@@ -1,7 +1,7 @@
 import {Command, Flags, Interfaces} from '@oclif/core'
 import {bold,cyan} from 'ansis'
 import * as ejs from 'ejs'
-import {mkdir,writeFile} from 'node:fs/promises'
+import {mkdir,writeFile,readFile} from 'node:fs/promises'
 import YAML, { YAMLMap } from 'yaml'
 
 type YamlCommandNode = {
@@ -22,6 +22,19 @@ type TopicNode = {
 }
 
 type Node = CommandNode | TopicNode
+
+type Macros = {
+  persistentFlagsCompletion?: {
+    [name: string]: string[];
+  };
+  commandOverrides?: {
+    flags?: {
+      [name: string]: {
+        [name: string]: string[];
+      };
+    };
+  };
+};
 
 export default class CarapaceGen extends Command {
   static override description = `Generate a carapace spec file
@@ -46,7 +59,13 @@ https://github.com/carapace-sh/carapace-spec`
 
     const commandNodes = this.getCommandNodes()
 
-    await writeFile(specPath, YAML.stringify(this.buildCommandTree(commandNodes)))
+    const macrosFilepath = process.env['OCLIF_CARAPACE_SPEC_MACROS_FILE']
+    const macros = macrosFilepath ? YAML.parse(await readFile(macrosFilepath, 'utf8')) : undefined
+
+    await writeFile(specPath, YAML.stringify(this.buildCommandTree(commandNodes, macros), {
+      // avoid using YAML anchors in completion file, carapace doesn't like them.
+      aliasDuplicateObjects: false
+    }))
 
     if (!flags['refresh-cache']) {
       this.log(`
@@ -65,7 +84,7 @@ https://github.com/carapace-sh/carapace-spec`
     }
   }
   
-  private buildCommandTree(nodes: Node[]) {
+  private buildCommandTree(nodes: Node[], macros: Macros | undefined) {
     const commandTree: {
       name: string,
       description: string;
@@ -145,6 +164,20 @@ https://github.com/carapace-sh/carapace-spec`
               key: flagDef,
               value: node.flags[flagName].summary ?? node.flags[flagName].description ?? ''
             })
+
+            if (macros) {
+              if (macros.persistentFlagsCompletion && Object.hasOwn(macros.persistentFlagsCompletion, flagName)) {
+                completion.flag[flagName] = macros.persistentFlagsCompletion[flagName]
+                hasFlagValueCompletion = true
+              }
+              if (macros.commandOverrides?.flags && Object.hasOwn(macros.commandOverrides.flags, node.id)) {
+                if (Object.hasOwn(macros.commandOverrides.flags[node.id], flagName)) {
+                  completion.flag[flagName] = macros.commandOverrides.flags[node.id][flagName]
+                  hasFlagValueCompletion = true
+                }
+              }
+            }
+            
           }
 
           // add oclif's global help flag
