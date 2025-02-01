@@ -40,7 +40,7 @@ You can use macros to define custom flag completion logic for dynamic flag value
 Macros file example for the Salesforce CLI:
 ```yaml
 # this node applies to all commands, define here completion logic for flags that repeat themselves in multiple commands.
-persistentflagscompletion:
+persistentFlagsCompletion:
   target-org: ["$(sf org list auth --json | jq -r '.result[].username')"]
   target-dev-hub: ["$(sf org list auth --json | jq -r '.result[] | select(.isdevhub) | .username')"]
   definition-file: ["$files([.json])"]
@@ -49,7 +49,7 @@ persistentflagscompletion:
 
 # override flag completion for specific commands.
   # important: command ids need to separated by colons.
-commandoverrides:
+commandOverrides:
   flags:
     'project:deploy:start':
       pre-destructive-changes: ["$files([.xml])"]
