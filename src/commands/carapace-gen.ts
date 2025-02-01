@@ -59,7 +59,7 @@ https://github.com/carapace-sh/carapace-spec`
 
     const commandNodes = this.getCommandNodes()
 
-    const macrosFilepath = process.env['OCLIF_CARAPACE_SPEC_MACROS_FILE']
+    const macrosFilepath = this.config.scopedEnvVar('CARAPACE_SPEC_MACROS_FILE')
     const macros = macrosFilepath ? YAML.parse(await readFile(macrosFilepath, 'utf8')) : undefined
 
     await writeFile(specPath, YAML.stringify(this.buildCommandTree(commandNodes, macros), {
