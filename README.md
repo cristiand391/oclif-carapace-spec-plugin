@@ -42,22 +42,22 @@ Macros file example for the Salesforce CLI:
 # this node applies to all commands, define here completion logic for flags that repeat themselves in multiple commands.
 persistentFlagsCompletion:
   target-org: ["$(sf org list auth --json | jq -r '.result[].username')"]
-  target-dev-hub: ["$(sf org list auth --json | jq -r '.result[] | select(.isdevhub) | .username')"]
+  target-dev-hub: ["$(sf org list auth --json | jq -r '.result[] | select(.isDevHub) | .username')"]
   definition-file: ["$files([.json])"]
   manifest: ["$files([.xml])"]
   file: ["$files"]
 
 # override flag completion for specific commands.
-  # important: command ids need to separated by colons.
+# important: command ids need to separated by colons.
 commandOverrides:
   flags:
     'project:deploy:start':
       pre-destructive-changes: ["$files([.xml])"]
       post-destructive-changes: ["$files([.xml])"]
     'org:delete:scratch':
-        target-org: ["$(sf org list auth --json | jq -r '.result[] | select(.isscratchorg) | .username')"]
+        target-org: ["$(sf org list auth --json | jq -r '.result[] | select(.isScratchOrg) | .username')"]
     'org:delete:sandbox':
-        target-org: ["$(sf org list auth --json | jq -r '.result[] | select(.issandbox) | .username')"]
+        target-org: ["$(sf org list auth --json | jq -r '.result[] | select(.isSandbox) | .username')"]
 
 ```
 
@@ -66,11 +66,11 @@ It uses the `exec` macro for `--target-org` and `--target-dev-hub` flags to get 
 ### Usage
 
 1. Define a YAML file with completion definitions like in the example above.
-2. Set the `OCLIF_CARAPACE_SPEC_MACROS_FILE` env var to the path to the YAML file.
+2. Set the `<BIN>_CARAPACE_SPEC_MACROS_FILE` env var to the path to the YAML file.
 3. Run `sf carapace-gen --refresh-cache`.
 
 > [!NOTE]  
-This plugin re-generates the carapace spec everytime you install/uninstall plugins via `plugins install/uninstall`, make sure to set the `OCLIF_CARAPACE_SPEC_MACROS_FILE` env var in your shell RC file so that you don't miss the custom completions when the automatic re-generation happens under the hood.
+This plugin re-generates the carapace spec everytime you install/uninstall plugins via `plugins install/uninstall`, make sure to set the `<BIN>_CARAPACE_SPEC_MACROS_FILE` env var in your shell RC file so that you don't miss the custom completions when the automatic re-generation happens under the hood.
 
 
 ## Why should I use this instead of `@oclif/plugin-autocomplete`?
