@@ -1,3 +1,12 @@
+# [0.3.0](https://github.com/cristiand391/oclif-carapace-spec-plugin/compare/0.2.2...0.3.0) (2025-02-01)
+
+
+### Features
+
+* add support for carapace macros ([#6](https://github.com/cristiand391/oclif-carapace-spec-plugin/issues/6)) ([4c31fee](https://github.com/cristiand391/oclif-carapace-spec-plugin/commit/4c31fee189806ad4c740368f8ed0bb9bacf900e1))
+
+
+
 ## [0.2.2](https://github.com/cristiand391/oclif-carapace-spec-plugin/compare/0.2.0...0.2.2) (2024-10-18)
 
 
