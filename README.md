@@ -68,6 +68,9 @@ It uses the `exec` macro for `--target-org` and `--target-dev-hub` flags to get 
 1. Define a YAML file with completion definitions like in the example above.
 2. Set the `<BIN>_CARAPACE_SPEC_MACROS_FILE` env var to the path to the YAML file.
 3. Run `sf carapace-gen --refresh-cache`.
+   
+> [!NOTE]  
+The `<BIN>` part in the env var in step 2 refers to the name of your oclif CLI. For instance, for the Salesforce CLI (`sf`) the env var should be `SF_CARAPACE_SPEC_MACROS_FILE`.
 
 > [!NOTE]  
 This plugin re-generates the carapace spec everytime you install/uninstall plugins via `plugins install/uninstall`, make sure to set the `<BIN>_CARAPACE_SPEC_MACROS_FILE` env var in your shell RC file so that you don't miss the custom completions when the automatic re-generation happens under the hood.
