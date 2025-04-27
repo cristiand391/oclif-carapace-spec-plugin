@@ -126,7 +126,7 @@ https://github.com/carapace-sh/carapace-spec`
             if (node.flags[flagName].exclusive) {
               const exclusives = node.flags[flagName].exclusive.filter(flag => {
                 // @ts-ignore
-                return node.flags[flag] && !node.flags[flag].hidden
+                return node.flags[flag] && !node.flags[flag].hidden && !node.flags[flag].deprecated
               })
 
               if (exclusives.length === 0) continue
