@@ -53,7 +53,8 @@
     "build": "rm -rf dist && tsc -b",
     "lint": "eslint . --ext .ts",
     "postpack": "rm -f oclif.manifest.json",
-    "prepack": "oclif manifest"
+    "prepack": "oclif manifest",
+    "test": "node --loader ts-node/esm --test test/**/*.test.ts"
   },
   "types": "dist/index.d.ts"
 }
