@@ -1,15 +1,9 @@
 import {Command, Flags, Interfaces} from '@oclif/core'
-import {bold,cyan} from 'ansis'
 import * as ejs from 'ejs'
 import {mkdir,writeFile,readFile} from 'node:fs/promises'
-import YAML, { YAMLMap } from 'yaml'
+import {styleText} from 'node:util'
+import YAML from 'yaml'
 import {buildCommandTree} from '../utils/buildCommandTree.js'
-
-type YamlCommandNode = {
-  name: string;
-  description: string;
-  commands: YamlCommandNode[]
-}
 
 type CommandNode = {
   flags?: {[name: string]: Command.Flag.Cached}
@@ -23,19 +17,6 @@ type TopicNode = {
 }
 
 type Node = CommandNode | TopicNode
-
-type Macros = {
-  persistentFlagsCompletion?: {
-    [name: string]: string[];
-  };
-  commandOverrides?: {
-    flags?: {
-      [name: string]: {
-        [name: string]: string[];
-      };
-    };
-  };
-};
 
 export default class CarapaceGen extends Command {
   static override description = `Generate a carapace spec file
@@ -72,15 +53,15 @@ https://github.com/carapace-sh/carapace-spec`
       this.log(`
 1) Source the following spec file in your shell profile:
 
-  ${cyan(specPath)}
+  ${styleText('cyan',specPath)}
 
-  ${bold('Instructions for supported shells by carapace-gen:')}
+  ${styleText('bold','Instructions for supported shells by carapace-gen:')}
   https://carapace-sh.github.io/carapace-spec/carapace-spec/usage.html
 
 2) Start using autocomplete
 
-  ${cyan(`${bin} <TAB>`)}              ## Command completion
-  ${cyan(`${bin} command --<TAB>`)}    ## Flag completion
+  ${styleText('cyan',`${bin} <TAB>`)}              ## Command completion
+  ${styleText('cyan',`${bin} command --<TAB>`)}    ## Flag completion
 `)
     }
   }
