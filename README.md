@@ -19,13 +19,13 @@ https://carapace-sh.github.io/carapace-spec/carapace-spec/usage.html
 * Completion overrides (see `Macros` section below)
 
 ## Requirements
- * `carapace-spec`: [dowload the binary for your OS]([url](https://github.com/carapace-sh/carapace-spec/releases)) and put it in your `PATH`
+ * `carapace-spec`: [dowload the binary for your OS](https://github.com/carapace-sh/carapace-spec/releases) and put it in your `PATH`
  * oclif CLI that supports installing plugins via `plugins install`
 
 ## Install
 
 ```bash
-plugins install @cristiand391/oclif-carapace-spec-plugin
+<CLI> plugins install @cristiand391/oclif-carapace-spec-plugin
 ```
 
 Then run the `carapace-gen` command and follow the instructions to source the spec in your shell.
