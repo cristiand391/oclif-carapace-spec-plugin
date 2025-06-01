@@ -1,14 +1,9 @@
 import {Command, Flags, Interfaces} from '@oclif/core'
-import {bold,cyan} from 'ansis'
 import * as ejs from 'ejs'
 import {mkdir,writeFile,readFile} from 'node:fs/promises'
-import YAML, { YAMLMap } from 'yaml'
-
-type YamlCommandNode = {
-  name: string;
-  description: string;
-  commands: YamlCommandNode[]
-}
+import {styleText} from 'node:util'
+import YAML from 'yaml'
+import {buildCommandTree} from '../utils/buildCommandTree.js'
 
 type CommandNode = {
   flags?: {[name: string]: Command.Flag.Cached}
@@ -22,19 +17,6 @@ type TopicNode = {
 }
 
 type Node = CommandNode | TopicNode
-
-type Macros = {
-  persistentFlagsCompletion?: {
-    [name: string]: string[];
-  };
-  commandOverrides?: {
-    flags?: {
-      [name: string]: {
-        [name: string]: string[];
-      };
-    };
-  };
-};
 
 export default class CarapaceGen extends Command {
   static override description = `Generate a carapace spec file
@@ -62,7 +44,7 @@ https://github.com/carapace-sh/carapace-spec`
     const macrosFilepath = this.config.scopedEnvVar('CARAPACE_SPEC_MACROS_FILE')
     const macros = macrosFilepath ? YAML.parse(await readFile(macrosFilepath, 'utf8')) : undefined
 
-    await writeFile(specPath, YAML.stringify(this.buildCommandTree(commandNodes, macros), {
+    await writeFile(specPath, YAML.stringify(buildCommandTree(commandNodes, macros, bin, this.config.pjson.description ?? `${bin} CLI`), {
       // avoid using YAML anchors in completion file, carapace doesn't like them.
       aliasDuplicateObjects: false
     }))
@@ -71,165 +53,19 @@ https://github.com/carapace-sh/carapace-spec`
       this.log(`
 1) Source the following spec file in your shell profile:
 
-  ${cyan(specPath)}
+  ${styleText('cyan',specPath)}
 
-  ${bold('Instructions for supported shells by carapace-gen:')}
+  ${styleText('bold','Instructions for supported shells by carapace-gen:')}
   https://carapace-sh.github.io/carapace-spec/carapace-spec/usage.html
 
 2) Start using autocomplete
 
-  ${cyan(`${bin} <TAB>`)}              ## Command completion
-  ${cyan(`${bin} command --<TAB>`)}    ## Flag completion
+  ${styleText('cyan',`${bin} <TAB>`)}              ## Command completion
+  ${styleText('cyan',`${bin} command --<TAB>`)}    ## Flag completion
 `)
     }
   }
   
-  private buildCommandTree(nodes: Node[], macros: Macros | undefined) {
-    const commandTree: {
-      name: string,
-      description: string;
-      commands: YamlCommandNode[]
-    } = { name: this.config.bin, description: this.config.pjson.description ?? `${this.config.bin} CLI`,commands: []  };
-
-    for (const node of nodes) {
-      const parts = node.id.split(':')
-      let currentLevel = commandTree.commands;
-
-      // Traverse or create the command hierarchy
-      for (const part of parts) {
-        // Check if the command already exists at this level
-        let existingCommand = currentLevel.find(cmd => cmd.name === part);
-
-        const isCommand = "flags" in node
-
-        let flags: YAMLMap | undefined
-
-        const completion: {
-          flag: { [key: string]: string[] }
-        } = {
-          flag: {}
-        }
-        let hasFlagValueCompletion = false
-
-        const exclusiveflags: string[][] = []
-        
-        if (isCommand) {
-          flags= new YAMLMap()
-
-          let hasHelpFlag = false;
-
-          for (const flagName in node.flags) {
-            const flag = node.flags[flagName]
-
-            if (flag.deprecated || flag.hidden) continue
-
-            if (node.flags[flagName].exclusive) {
-              const exclusives = node.flags[flagName].exclusive.filter(flag => {
-                // @ts-ignore
-                return node.flags[flag] && !node.flags[flag].hidden && !node.flags[flag].deprecated
-              })
-
-              if (exclusives.length === 0) continue
-
-              // avoid duplicate `exclusiveflags` arrays
-              // this can happen if 2 or more flags define the same exclusions.
-              const sortedFlagExclusives = [...exclusives, flagName].sort()
-              const alreadyExists = exclusiveflags.find(exclusive => exclusive.toString() === sortedFlagExclusives.toString())
-
-              if (!alreadyExists) {
-                exclusiveflags.push(sortedFlagExclusives)
-              }
-            }
-
-
-            // check if `--help` is already taken by the command, carapace-spec panics on duplicated flags
-            if (!hasHelpFlag) {
-              hasHelpFlag = flagName === 'help'
-            }
-
-            let flagDef = flag.char ? `-${flag.char}, --${flagName}` : `--${flagName}`
-
-            // See flag modifiers:
-            // https://carapace-sh.github.io/carapace-spec/carapace-spec/command/flags.html
-            if (flag.type === "option") {
-              flagDef += flag.multiple ? '*=' : '='
-
-              if (flag.options) {
-                completion.flag[flagName] = [...flag.options] 
-                hasFlagValueCompletion = true
-              }
-            }
-
-            flags.add({
-              key: flagDef,
-              value: node.flags[flagName].summary ?? node.flags[flagName].description ?? ''
-            })
-
-            if (macros) {
-              if (macros.persistentFlagsCompletion && Object.hasOwn(macros.persistentFlagsCompletion, flagName)) {
-                completion.flag[flagName] = macros.persistentFlagsCompletion[flagName]
-                hasFlagValueCompletion = true
-              }
-              if (macros.commandOverrides?.flags && Object.hasOwn(macros.commandOverrides.flags, node.id)) {
-                if (Object.hasOwn(macros.commandOverrides.flags[node.id], flagName)) {
-                  completion.flag[flagName] = macros.commandOverrides.flags[node.id][flagName]
-                  hasFlagValueCompletion = true
-                }
-              }
-            }
-            
-          }
-
-          // add oclif's global help flag
-          if (!hasHelpFlag) {
-            flags.add({
-              key: '--help',
-              value: 'Show help for command'
-            })
-          }
-        }
-
-        // if on last part of the node and the existing node is a topic,
-        // then the current node is a cotopic (topic that's also a command).
-        //
-        // In these cases we want to modify the cotopic node to:
-        // 1. prefer the command's summary over the topic one
-        // 2. add the command's flags
-        // 3. add the topic's command
-        if (part === parts[parts.length - 1] && existingCommand && !('flags' in existingCommand)) {
-          const existingCommandIdx = currentLevel.findIndex(cmd => cmd.name === part);
-
-          existingCommand = {
-            description: node.summary,
-            name: part,
-            ...(isCommand ? {flags}: {}),
-            ...((isCommand && hasFlagValueCompletion ) ? { completion } : {}),
-            ...((isCommand && exclusiveflags.length > 0 ) ? { exclusiveflags } : {}),
-            commands: existingCommand.commands
-          }
-
-          currentLevel[existingCommandIdx] = existingCommand
-        } else if (!existingCommand) {
-          // Create a new command entry
-          existingCommand = {
-            description: node.summary,
-            name: part,
-            ...(isCommand ? {flags}: {}),
-            ...((isCommand && exclusiveflags.length > 0 ) ? { exclusiveflags } : {}),
-            ...((isCommand && hasFlagValueCompletion )? { completion } : {}),
-            commands: []
-          };
-          currentLevel.push(existingCommand);
-        }
-
-        // Move down to the next level of commands
-        currentLevel = existingCommand.commands;
-      }
-    }
-
-    return commandTree;
-  }
-
   private getCommandNodes(): Node[] {
     const nodes: Node[] = []
 

@@ -9,17 +9,16 @@
   "homepage": "https://github.com/cristiand391/oclif-carapace-spec-plugin",
   "bugs": "https://github.com/cristiand391/oclif-carapace-spec-plugin/issues",
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20"
   },
   "dependencies": {
     "@oclif/core": "^4",
-    "ansis": "^3.3.2",
     "ejs": "^3.1.10",
-    "yaml": "^2.5.1"
+    "yaml": "^2.8.0"
   },
   "devDependencies": {
     "@types/ejs": "^3.1.5",
-    "@types/node": "^18",
+    "@types/node": "^22",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
     "eslint": "^8",
@@ -53,7 +52,8 @@
     "build": "rm -rf dist && tsc -b",
     "lint": "eslint . --ext .ts",
     "postpack": "rm -f oclif.manifest.json",
-    "prepack": "oclif manifest"
+    "prepack": "oclif manifest",
+    "test": "node --loader ts-node/esm --test test/**/*.test.ts"
   },
   "types": "dist/index.d.ts"
 }

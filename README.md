@@ -19,13 +19,13 @@ https://carapace-sh.github.io/carapace-spec/carapace-spec/usage.html
 * Completion overrides (see `Macros` section below)
 
 ## Requirements
- * `carapace-spec`: [dowload the binary for your OS]([url](https://github.com/carapace-sh/carapace-spec/releases)) and put it in your `PATH`
- * oclif CLI that supports installing plugins via `plugins install`
+ * `carapace-spec`: [dowload the binary for your OS](https://github.com/carapace-sh/carapace-spec/releases) and put it in your `PATH`
+ * oclif CLI that supports installing plugins via [`plugins install`]([https://github.com/oclif/plugin-plugins](https://github.com/oclif/plugin-plugins?tab=readme-ov-file#what-is-this))
 
 ## Install
 
 ```bash
-plugins install @cristiand391/oclif-carapace-spec-plugin
+<CLI> plugins install @cristiand391/oclif-carapace-spec-plugin
 ```
 
 Then run the `carapace-gen` command and follow the instructions to source the spec in your shell.
@@ -66,17 +66,11 @@ It uses the `exec` macro for `--target-org` and `--target-dev-hub` flags to get 
 ### Usage
 
 1. Define a YAML file with completion definitions like in the example above.
-2. Set the `<BIN>_CARAPACE_SPEC_MACROS_FILE` env var to the path to the YAML file.
-3. Run `sf carapace-gen --refresh-cache`.
+2. Set the `<CLI>_CARAPACE_SPEC_MACROS_FILE` env var to the path to the YAML file.
+3. Run `<CLI> carapace-gen --refresh-cache`.
    
 > [!NOTE]  
-The `<BIN>` part in the env var in step 2 refers to the name of your oclif CLI. For instance, for the Salesforce CLI (`sf`) the env var should be `SF_CARAPACE_SPEC_MACROS_FILE`.
+The `<CLI>` part in the env var in step 2 refers to the executable name of your oclif CLI. For instance, for the Salesforce CLI (`sf`) the env var should be `SF_CARAPACE_SPEC_MACROS_FILE`.
 
 > [!NOTE]  
-This plugin re-generates the carapace spec everytime you install/uninstall plugins via `plugins install/uninstall`, make sure to set the `<BIN>_CARAPACE_SPEC_MACROS_FILE` env var in your shell RC file so that you don't miss the custom completions when the automatic re-generation happens under the hood.
-
-
-## Why should I use this instead of `@oclif/plugin-autocomplete`?
-`@oclif/plugin-autocomplete` only supports bash, zsh and powershell while `carapace-spec` supports those + 6 additional shells: https://carapace-sh.github.io/carapace-spec/carapace-spec/usage.html
-
-Except for flag exclusive relationships and completion overrides (macros), the completion experience is pretty much the same so if `oclif/plugin-autocomplete` works for you then you can ignore this.
+This plugin re-generates the carapace spec everytime you install/uninstall plugins via `plugins install/uninstall`, make sure to set the `<CLI>_CARAPACE_SPEC_MACROS_FILE` env var in your shell RC file so that you don't miss the custom completions when the automatic re-generation happens under the hood.
