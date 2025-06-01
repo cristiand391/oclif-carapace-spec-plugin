@@ -1,3 +1,12 @@
+## [0.4.1](https://github.com/cristiand391/oclif-carapace-spec-plugin/compare/0.4.0...0.4.1) (2025-06-01)
+
+
+### Bug Fixes
+
+* skip refresh hook when being installed ([#10](https://github.com/cristiand391/oclif-carapace-spec-plugin/issues/10)) ([6d8cadd](https://github.com/cristiand391/oclif-carapace-spec-plugin/commit/6d8cadd6dbf029594211990e7e1ed0b6e50c420b))
+
+
+
 # [0.4.0](https://github.com/cristiand391/oclif-carapace-spec-plugin/compare/0.3.1...0.4.0) (2025-06-01)
 
 
@@ -26,15 +35,6 @@
 
 
 ## [0.2.2](https://github.com/cristiand391/oclif-carapace-spec-plugin/compare/0.2.0...0.2.2) (2024-10-18)
-
-
-
-# [0.2.0](https://github.com/cristiand391/oclif-carapace-spec-plugin/compare/0.1.1...0.2.0) (2024-10-16)
-
-
-### Features
-
-* support help/option/exclusive flags ([#3](https://github.com/cristiand391/oclif-carapace-spec-plugin/issues/3)) ([a7398cb](https://github.com/cristiand391/oclif-carapace-spec-plugin/commit/a7398cb1a24bba0c7019b34ac9c4f8ca510a8d2b))
 
 
 
