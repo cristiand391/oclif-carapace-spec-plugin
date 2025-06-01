@@ -1,3 +1,12 @@
+# [0.4.0](https://github.com/cristiand391/oclif-carapace-spec-plugin/compare/0.3.1...0.4.0) (2025-06-01)
+
+
+### Features
+
+* bump/remove deps + drop node v18 + add UTs ([#9](https://github.com/cristiand391/oclif-carapace-spec-plugin/issues/9)) ([7d369ea](https://github.com/cristiand391/oclif-carapace-spec-plugin/commit/7d369ea6bfd8d8ea9cb5183808008686db50a115))
+
+
+
 ## [0.3.1](https://github.com/cristiand391/oclif-carapace-spec-plugin/compare/0.3.0...0.3.1) (2025-05-04)
 
 
@@ -26,15 +35,6 @@
 ### Features
 
 * support help/option/exclusive flags ([#3](https://github.com/cristiand391/oclif-carapace-spec-plugin/issues/3)) ([a7398cb](https://github.com/cristiand391/oclif-carapace-spec-plugin/commit/a7398cb1a24bba0c7019b34ac9c4f8ca510a8d2b))
-
-
-
-## [0.1.1](https://github.com/cristiand391/oclif-carapace-spec-plugin/compare/0.1.0...0.1.1) (2024-10-13)
-
-
-### Bug Fixes
-
-* support cotopics ([#2](https://github.com/cristiand391/oclif-carapace-spec-plugin/issues/2)) ([924677d](https://github.com/cristiand391/oclif-carapace-spec-plugin/commit/924677d0eea1f01506d3bb76878cfdcfc56549ee))
 
 
 
