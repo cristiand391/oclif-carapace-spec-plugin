@@ -38,7 +38,7 @@ type Macros = {
   };
 };
 
-export type CommandTree = {
+type CommandTree = {
   name: string;
   description: string;
   commands: YamlCommandNode[];
