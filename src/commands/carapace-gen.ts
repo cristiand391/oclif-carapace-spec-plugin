@@ -1,9 +1,11 @@
 import {Command, Flags, Interfaces} from '@oclif/core'
 import * as ejs from 'ejs'
 import {mkdir,writeFile,readFile} from 'node:fs/promises'
+import {join} from 'node:path'
 import {styleText} from 'node:util'
 import YAML from 'yaml'
 import {buildCommandTree} from '../utils/buildCommandTree.js'
+import { getUserConfigDir } from '../utils/getUserConfigDir.js'
 
 type CommandNode = {
   flags?: {[name: string]: Command.Flag.Cached}
@@ -31,11 +33,13 @@ https://github.com/carapace-sh/carapace-spec`
   public async run(): Promise<void> {
     const { flags } = await this.parse(CarapaceGen)
 
-    const { bin, cacheDir } = this.config
+    const userConfigDir = getUserConfigDir();
+    const { bin } = this.config
 
-    const specPath = `${cacheDir}/oclif-carapace-spec/${bin}.yml`
+    const specDir = join(userConfigDir, "carapace", "specs");
+    const specPath = join(specDir, `${bin}.yaml`);
 
-    await mkdir(`${cacheDir}/oclif-carapace-spec`, {
+    await mkdir(specDir, {
       recursive: true
     })
 
