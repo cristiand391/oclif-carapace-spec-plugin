@@ -1,3 +1,12 @@
+## [0.5.1](https://github.com/cristiand391/oclif-carapace-spec-plugin/compare/0.5.0...0.5.1) (2026-01-13)
+
+
+### Bug Fixes
+
+* respect `XDG_CONFIG_HOME` in all OSes ([#13](https://github.com/cristiand391/oclif-carapace-spec-plugin/issues/13)) ([af09bf5](https://github.com/cristiand391/oclif-carapace-spec-plugin/commit/af09bf51b9ee54cbd3a2e8254b885ebce4c99e63))
+
+
+
 # [0.5.0](https://github.com/cristiand391/oclif-carapace-spec-plugin/compare/0.4.1...0.5.0) (2026-01-02)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * skip exclusive flags if deprecated ([#8](https://github.com/cristiand391/oclif-carapace-spec-plugin/issues/8)) ([e6cd782](https://github.com/cristiand391/oclif-carapace-spec-plugin/commit/e6cd7822861dfb52ce755a18b02efb9b9f92ca10))
-
-
-
-# [0.3.0](https://github.com/cristiand391/oclif-carapace-spec-plugin/compare/0.2.2...0.3.0) (2025-02-01)
-
-
-### Features
-
-* add support for carapace macros ([#6](https://github.com/cristiand391/oclif-carapace-spec-plugin/issues/6)) ([4c31fee](https://github.com/cristiand391/oclif-carapace-spec-plugin/commit/4c31fee189806ad4c740368f8ed0bb9bacf900e1))
 
 
 
