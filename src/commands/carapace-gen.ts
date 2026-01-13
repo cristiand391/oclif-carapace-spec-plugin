@@ -23,9 +23,12 @@ type Node = CommandNode | TopicNode
 export default class CarapaceGen extends Command {
   static override description = `Generate a carapace spec file
 
-Use \`carapace-gen\` to get shell completion:
-https://github.com/carapace-sh/carapace-spec`
+Use this command to generate a carapace spec for your CLI:
+https://carapace-sh.github.io/carapace-bin/spec.html
 
+Spec format:
+https://carapace-sh.github.io/carapace-spec/
+`
   static flags = {
     'refresh-cache': Flags.boolean({char: 'r', summary: 'Refresh cache (ignores displaying instructions)'}),
   }
@@ -55,17 +58,17 @@ https://github.com/carapace-sh/carapace-spec`
 
     if (!flags['refresh-cache']) {
       this.log(`
-1) Source the following spec file in your shell profile:
+Spec written to:
 
   ${styleText('cyan',specPath)}
 
-  ${styleText('bold','Instructions for supported shells by carapace-gen:')}
-  https://carapace-sh.github.io/carapace-spec/carapace-spec/usage.html
+If using \`carapace\` (carapace-bin), the spec will be loaded automatically.
+${styleText('bold','Setup instructions:')}
+https://carapace-sh.github.io/carapace-bin/setup.html
 
-2) Start using autocomplete
-
-  ${styleText('cyan',`${bin} <TAB>`)}              ## Command completion
-  ${styleText('cyan',`${bin} command --<TAB>`)}    ## Flag completion
+If using \`carapace-spec\`, source the spec file in your shell profile
+${styleText('bold','Setup instructions:')}
+https://carapace-sh.github.io/carapace-spec/carapace-spec/usage.html
 `)
     }
   }

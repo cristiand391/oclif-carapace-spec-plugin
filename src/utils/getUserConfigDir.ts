@@ -3,11 +3,16 @@ import {join} from "node:path";
 
 /**
  * getUserConfigDir returns the default directory to use for user-specific
- * configuration data, following the same rules as Go's os.UserConfigDir.
- *
- * Throws an Error if the directory cannot be determined.
+ * configuration data.
  */
 export function getUserConfigDir(): string {
+  // carapace respects `XDG_CONFIG_HOME` on all OSes:
+  // https://carapace-sh.github.io/carapace-bin/setup/userConfigDir.html
+  const xdgConfigHome = process.env.XDG_CONFIG_HOME;
+  if (xdgConfigHome) {
+    return xdgConfigHome;
+  }
+
   const platform = process.platform;
 
   // Windows
@@ -27,12 +32,6 @@ export function getUserConfigDir(): string {
   // macOS
   if (platform === "darwin") {
     return join(home, "Library", "Application Support");
-  }
-
-  // Unix/Linux
-  const xdgConfigHome = process.env.XDG_CONFIG_HOME;
-  if (xdgConfigHome) {
-    return xdgConfigHome;
   }
 
   return join(home, ".config");
