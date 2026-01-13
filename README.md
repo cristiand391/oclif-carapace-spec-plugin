@@ -3,7 +3,7 @@ oclif-carapace-spec-plugin
 
 An oclif plugin to generate a carapace spec!
 
-`carapace-spec` allows to define CLI completions in a spec file, you can use it to get shell completion in all supported shells listed here:
+`carapace` allows to define CLI completions in a spec file, you can use it to get shell completion in all supported shells listed here:
 https://carapace-sh.github.io/carapace-spec/carapace-spec/usage.html
 
 
@@ -19,7 +19,7 @@ https://carapace-sh.github.io/carapace-spec/carapace-spec/usage.html
 * Completion overrides (see `Macros` section below)
 
 ## Requirements
- * `carapace-spec`: [dowload the binary for your OS](https://github.com/carapace-sh/carapace-spec/releases) and put it in your `PATH`
+ * `carapace-spec` or `carapace-bin`: [carapace-spec: dowload the binary for your OS](https://github.com/carapace-sh/carapace-spec/releases) and put it in your `PATH`. [carapace: see install instructions](https://carapace-sh.github.io/carapace-bin/install.html)
  * oclif CLI that supports installing plugins via [`plugins install`]([https://github.com/oclif/plugin-plugins](https://github.com/oclif/plugin-plugins?tab=readme-ov-file#what-is-this))
 
 ## Install
@@ -31,7 +31,7 @@ https://carapace-sh.github.io/carapace-spec/carapace-spec/usage.html
 Then run the `carapace-gen` command and follow the instructions to source the spec in your shell.
 
 ## Macros
-`carapace-spec` allows to use macros for customizing completion style and values:
+`carapace` allows to use macros for customizing completion style and values:
 
 https://carapace-sh.github.io/carapace-spec/carapace-spec/macros.html
 
